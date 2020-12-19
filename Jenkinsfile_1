@@ -13,6 +13,23 @@ pipeline {
         maven 'MAVEN3'
     }
     
+  triggers {
+    GenericTrigger(
+     genericVariables: [
+      [key: 'ref', value: '$.ref']
+     ],
+
+     causeString: 'Triggered on $ref',
+     token: 'PETCLINIC',
+     tokenCredentialId: '',
+     printContributedVariables: true,
+     printPostContent: true,
+     silentResponse: false,
+     regexpFilterText: '$ref',
+     regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
+    )
+  }
+    
     parameters {
         choice choices: ['DEV', 'SIT', 'UAT', 'PRD'], description: 'Environment Name', name: 'ENV'
         string defaultValue: '', description: 'The micro service name', name: 'APP_NAME', trim: false
@@ -22,7 +39,7 @@ pipeline {
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '15')
         timestamps()
         disableConcurrentBuilds()
-}
+    }
     
     stages {
         stage ('Stage 1'){
