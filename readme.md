@@ -18,7 +18,7 @@ You can then access petclinic here: http://localhost:9966/petclinic/
 ## In case you find a bug/suggested improvement for Spring Petclinic
 Our issue tracker is available here: https://github.com/SpringSource/spring-petclinic/issues
 
-## Working with Petclinic in Eclipse/STS
+## Working with Petclinic in Eclipse/STS.
 
 ### prerequisites
 The following items should be installed in your system:
