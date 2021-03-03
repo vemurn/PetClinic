@@ -21,6 +21,15 @@ pipeline {
     }
     
     stages {
+        
+        stage('Print Jenkins Vars'){
+            steps {
+                echo "Value of App Version is $app_version"
+                echo "Value of App Env is $app_env"
+                sh "env"
+            }
+        }
+        
         stage('Code Checkout'){
             steps {
                 echo "code checkout"
@@ -48,12 +57,18 @@ pipeline {
                 sh "mvn package"
             }
         }
-        stage('Build Image'){
+        stage('Upload Artifact'){
             steps {
-                sh '''
-                docker image build -t ec2-34-229-71-30.compute-1.amazonaws.com:9090/petclinic:$BUILD_ID .
-                docker image push ec2-34-229-71-30.compute-1.amazonaws.com:9090/petclinic:$BUILD_ID
-                '''
+                withCredentials([usernamePassword(credentialsId: 'nexus-repo-creds', usernameVariable: 'user', passwordVariable: 'passwd')]){
+                    sh '''
+                    curl -u $user:$passwd POST "http://ec2-34-229-71-30.compute-1.amazonaws.com:8081/service/rest/v1/components?repository=PetClinic" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "maven2.groupId=org.springframework.samples" -F "maven2.artifactId=petclinic" -F "maven2.version=${BUILD_ID}.0.0" -F "maven2.asset1=@${WORKSPACE}/target/petclinic.war" -F "maven2.asset1.extension=war"
+                    '''
+                }
+            }
+        }
+        stage('Deploy Code'){
+            steps {
+                ansiblePlaybook installation: 'ANSIBLE29', playbook: '/opt/ansible/deploy.yaml'
             }
         }
     }
