@@ -19,4 +19,4 @@
          dest: /home/azureuser/apache-tomcat-8.5/webapps
 
      - name: To START apache tomcat
-       shell: nohup /opt/apache-tomcat-8.5/bin/catalina.sh start
+       shell: nohup /home/azureuser/apache-tomcat-8.5/bin/catalina.sh start
